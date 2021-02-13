@@ -18,11 +18,12 @@ class System {
     int number_of_atoms;
     double temperature, mass;
 
-    const static double boltzmann_constant = 1.3806503e-23;
+    constexpr static double boltzmann_constant = 1.3806503e-23;
 
     Utils utils;
 
   public:
+  
     System(const int &N, const double &T, const double &M);
     void Initialize();
     void PrintState();

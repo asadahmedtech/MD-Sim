@@ -4,11 +4,11 @@ using namespace std;
 
 int main(){
     double Temperature = 298;
-    double Mass = 10;
-    int NumberOfParticles = 10;
+    double Mass = 39.948;
+    int NumberOfParticles = 1000;
 
     System system(NumberOfParticles, Temperature, Mass);
-    system.PrintState();
+    // system.PrintState();
 
     return 0;
 }
