@@ -20,7 +20,9 @@ void System::Initialize(){
 
     double factor =  sqrt(boltzmann_constant * temperature / mass);
 
-    // Iterate till desired Temperature is attained in the system.
+    // Iterate till desired Temperature is attained in the system or maximum iterations reache.
+    // It will prevent calculation overflow
+    int iteration = 0;
     do{
         //Generate random velocity from normalized distribution using box-muller method and multulply by the factor
         for(int atomIdx=0; atomIdx<number_of_atoms; atomIdx++){
@@ -41,7 +43,9 @@ void System::Initialize(){
             atom.vel_[1] -= sumVx/number_of_atoms;
             atom.vel_[2] -= sumVx/number_of_atoms;
         }
-    }while(!ValidateVelocity());
+
+        iteration++;
+    }while(!ValidateVelocity() && iteration < 20);
 
     if(ValidateVelocity()){
         std::cout<<"Velocity Generated and Validated"<<std::endl;
@@ -58,10 +62,13 @@ bool System::ValidateVelocity(){
         vrms += pow(atom.vel_[0], 2) + pow(atom.vel_[1], 2) + pow(atom.vel_[2], 2); 
     }
     double TempFactor = 3*number_of_atoms*boltzmann_constant*temperature/mass;
-    std::cout<<"Vrms : "<<sqrt(vrms)<<'\t'<<"RHS : "<<sqrt(TempFactor)<<'\t'<<"Error : "<<abs((TempFactor-vrms)/TempFactor)<<std::endl;
+    double TemperatureNew = (vrms * mass)/(3 * number_of_atoms *  boltzmann_constant);
+
+    // std::cout<<"Vrms : "<<sqrt(vrms)<<'\t'<<"RHS : "<<sqrt(TempFactor)<<'\t'<<"Error : "<<abs((TempFactor-vrms)/TempFactor)<<std::endl;
+    std::cout<<"Temperature : "<<temperature<<'\t'<<"New System Temperature : "<<TemperatureNew<<'\t'<<"Error : "<<abs((temperature-TemperatureNew)/temperature)<<std::endl;
 
     // Validation Check should be less than 1% error
-    if(abs((vrms-TempFactor)/vrms)<0.01)
+    if(abs(temperature-TemperatureNew)<0.1)
         return true;
 
     return false;
